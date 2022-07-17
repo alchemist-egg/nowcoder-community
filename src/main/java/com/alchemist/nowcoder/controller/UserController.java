@@ -45,6 +45,7 @@ public class UserController {
     @Autowired
     private HostHolder hostHolder;
 
+    // 账号设置页面
     @LoginRequired
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     public String getSettingPage() {
@@ -52,6 +53,7 @@ public class UserController {
     }
 
 
+    // 上传头像
     @LoginRequired
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     private String uploadHeader(MultipartFile headerImage, Model model) {

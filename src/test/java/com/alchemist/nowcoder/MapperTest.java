@@ -1,9 +1,11 @@
 package com.alchemist.nowcoder;
 
 
+import com.alchemist.nowcoder.dao.CommentMapper;
 import com.alchemist.nowcoder.dao.DiscussPostMapper;
 import com.alchemist.nowcoder.dao.LoginTicketMapper;
 import com.alchemist.nowcoder.dao.UserMapper;
+import com.alchemist.nowcoder.entity.Comment;
 import com.alchemist.nowcoder.entity.DiscussPost;
 import com.alchemist.nowcoder.entity.LoginTicket;
 import com.alchemist.nowcoder.entity.User;
@@ -28,6 +30,9 @@ public class MapperTest {
 
     @Autowired
     private LoginTicketMapper loginTicketMapper;
+
+    @Autowired
+    private CommentMapper commentMapper;
 
     @Test
     public void testSelectUser() {
@@ -62,6 +67,37 @@ public class MapperTest {
         loginTicketMapper.updateStatus("abc", 1);
         loginTicket2 = loginTicketMapper.selectByTicket("abc");
         System.out.println(loginTicket2);
+    }
+
+    @Test
+    void testInsertDiscussPost() {
+        DiscussPost discussPost = new DiscussPost();
+        discussPost.setUserId(888);
+        discussPost.setTitle("apple");
+        discussPost.setContent("多发点");
+        discussPost.setType(0);
+        discussPost.setStatus(0);
+        discussPost.setCreateTime(new Date());
+        discussPost.setCommentCount(8);
+        discussPost.setScore(71.5);
+        int i = discussPostMapper.insertDiscussPost(discussPost);
+        System.out.println(i);
+    }
+
+    @Test
+    void testSelectDiscussPostById() {
+        DiscussPost discussPost = discussPostMapper.selectDiscussPostById(111);
+        System.out.println(discussPost);
+    }
+
+    @Test
+    void testSelectCommentsByEntity() {
+        List<Comment> comments = commentMapper.selectCommentsByEntity(1, 228, 0, 20);
+        int count = commentMapper.selectCountByEntity(1, 228);
+        System.out.println("count:"+ count);
+        for (Comment comment : comments) {
+            System.out.println(comment);
+        }
     }
 
 }
