@@ -15,17 +15,20 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+// 使用AOP实现业务层的调用日志记录
 @Component
 @Aspect
 public class ServiceLogAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceLogAspect.class);
 
+    // 连接点，joinpoint
     @Pointcut("execution(* com.alchemist.nowcoder.service.*.*(..))")
     public void pointcut() {
 
     }
 
+    // 切点
     @Before("pointcut()")
     public void before(JoinPoint joinPoint) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

@@ -5,7 +5,9 @@ import com.alchemist.nowcoder.entity.DiscussPost;
 import com.alchemist.nowcoder.entity.Page;
 import com.alchemist.nowcoder.entity.User;
 import com.alchemist.nowcoder.service.DiscussPostService;
+import com.alchemist.nowcoder.service.LikeService;
 import com.alchemist.nowcoder.service.UserService;
+import com.alchemist.nowcoder.util.CommunityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,13 +20,16 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class HomeController {
+public class HomeController implements CommunityConstant {
 
     @Autowired
-    public DiscussPostService discussPostService;
+    private DiscussPostService discussPostService;
 
     @Autowired
-    public UserService userService;
+    private UserService userService;
+
+    @Autowired
+    private LikeService likeService;
 
     //显示首页帖子，向request域对象传入post和user
     @RequestMapping(value = "/index", method = RequestMethod.GET)
@@ -41,6 +46,10 @@ public class HomeController {
                 map.put("post", post);
                 User user = userService.findUserById(post.getUserId());
                 map.put("user", user);
+
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+                map.put("likeCount", likeCount);
+
                 discussPosts.add(map);
             }
         }
