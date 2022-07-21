@@ -3,6 +3,7 @@ package com.alchemist.nowcoder.controller;
 
 import com.alchemist.nowcoder.annotation.LoginRequired;
 import com.alchemist.nowcoder.entity.User;
+import com.alchemist.nowcoder.service.LikeService;
 import com.alchemist.nowcoder.service.UserService;
 import com.alchemist.nowcoder.util.CommunityUtil;
 import com.alchemist.nowcoder.util.HostHolder;
@@ -44,6 +45,9 @@ public class UserController {
 
     @Autowired
     private HostHolder hostHolder;
+
+    @Autowired
+    private LikeService likeService;
 
     // 账号设置页面
     @LoginRequired
@@ -92,6 +96,7 @@ public class UserController {
         return "redirect:/index";
     }
 
+    // 加载头像
     @RequestMapping(value = "/header/{fileName}", method = RequestMethod.GET)
     public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) {
         // 服务器存放路径
@@ -103,7 +108,7 @@ public class UserController {
         try (
                 OutputStream os = response.getOutputStream();
                 FileInputStream fis = new FileInputStream(fileName);
-                ){
+        ) {
             byte[] buffer = new byte[1024];
             int b = 0;
             while ((b = fis.read(buffer)) != -1) {
@@ -112,5 +117,22 @@ public class UserController {
         } catch (IOException e) {
             logger.error("读取头像失败：" + e.getMessage());
         }
+    }
+
+    // 个人主页
+    @RequestMapping(value = "/profile/{userId}", method = RequestMethod.GET)
+    public String getProfilePage(@PathVariable("userId") int userId, Model model) {
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("该用户不存在");
+        }
+
+        // 用户
+        model.addAttribute("user", user);
+        // 点赞数量
+        int likeCount = likeService.findUserLikeCount(userId);
+        model.addAttribute("likeCount", likeCount);
+
+        return "/site/profile";
     }
 }
