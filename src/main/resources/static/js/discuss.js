@@ -1,4 +1,4 @@
-function like(btn, entityType, entityId) {
+function like(btn, entityType, entityId, entityUserId) {
     $.post(
         CONTEXT_PATH + "/like",
         {"entityType":entityType, "entityId":entityId, "entityUserId":entityUserId},

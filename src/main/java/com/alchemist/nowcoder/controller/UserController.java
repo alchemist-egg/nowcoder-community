@@ -3,8 +3,10 @@ package com.alchemist.nowcoder.controller;
 
 import com.alchemist.nowcoder.annotation.LoginRequired;
 import com.alchemist.nowcoder.entity.User;
+import com.alchemist.nowcoder.service.FollowService;
 import com.alchemist.nowcoder.service.LikeService;
 import com.alchemist.nowcoder.service.UserService;
+import com.alchemist.nowcoder.util.CommunityConstant;
 import com.alchemist.nowcoder.util.CommunityUtil;
 import com.alchemist.nowcoder.util.HostHolder;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +29,7 @@ import java.io.OutputStream;
 
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController implements CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -48,6 +50,9 @@ public class UserController {
 
     @Autowired
     private LikeService likeService;
+
+    @Autowired
+    private FollowService followService;
 
     // 账号设置页面
     @LoginRequired
@@ -132,6 +137,18 @@ public class UserController {
         // 点赞数量
         int likeCount = likeService.findUserLikeCount(userId);
         model.addAttribute("likeCount", likeCount);
+        // 关注数量
+        long followeeCount = followService.findFolloweeCount(userId, ENTITY_TYPE_USER);
+        model.addAttribute("followeeCount",followeeCount);
+        // 粉丝数量
+        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, userId);
+        model.addAttribute("followerCount",followerCount);
+        // 当前是否关注实体
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            hasFollowed = followService.hasFollowed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
+        }
+        model.addAttribute("hasFollowed", hasFollowed);
 
         return "/site/profile";
     }
