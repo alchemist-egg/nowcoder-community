@@ -5,7 +5,9 @@ import com.alchemist.nowcoder.entity.User;
 import com.alchemist.nowcoder.service.UserService;
 import com.alchemist.nowcoder.util.CookieUtil;
 import com.alchemist.nowcoder.util.HostHolder;
+import com.alchemist.nowcoder.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,6 +25,9 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
     @Autowired
     private HostHolder hostHolder;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 从cookie中获取凭证
@@ -31,7 +36,9 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
 
         if(ticket != null) {
             // 查询凭证
-            LoginTicket loginTicket = userService.findLoginTicketByTicket(ticket);
+//            LoginTicket loginTicket = userService.findLoginTicketByTicket(ticket);
+            String ticketKey = RedisKeyUtil.getTicketKey(ticket);
+            LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
             // 检查此凭证是否有效
             if(loginTicket != null && loginTicket.getStatus() == 0 && loginTicket.getExpired().after(new Date())) {
                 // 根据凭证查询用户
