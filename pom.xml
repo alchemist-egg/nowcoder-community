@@ -84,6 +84,12 @@
             <version>2.0.7</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+
     </dependencies>
 
     <build>

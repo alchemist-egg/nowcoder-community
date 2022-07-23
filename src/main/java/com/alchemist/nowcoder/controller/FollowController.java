@@ -1,7 +1,9 @@
 package com.alchemist.nowcoder.controller;
 
+import com.alchemist.nowcoder.entity.Event;
 import com.alchemist.nowcoder.entity.Page;
 import com.alchemist.nowcoder.entity.User;
+import com.alchemist.nowcoder.event.EventProducer;
 import com.alchemist.nowcoder.service.FollowService;
 import com.alchemist.nowcoder.service.UserService;
 import com.alchemist.nowcoder.util.CommunityConstant;
@@ -30,6 +32,9 @@ public class FollowController implements CommunityConstant {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EventProducer eventProducer;
+
 
     @RequestMapping(value = "/follow", method = RequestMethod.POST)
     @ResponseBody
@@ -37,6 +42,15 @@ public class FollowController implements CommunityConstant {
         User user = hostHolder.getUser();
 
         followService.follow(user.getId(), entityType, entityId);
+
+        // 触发关注事件
+        Event event = new Event()
+                .setTopic(TOPIC_FOLLOW)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId);
+        eventProducer.fireEvent(event);
 
         return CommunityUtil.getJSONString(0, "已关注！");
     }
