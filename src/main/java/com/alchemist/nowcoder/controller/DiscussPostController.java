@@ -1,10 +1,8 @@
 package com.alchemist.nowcoder.controller;
 
 
-import com.alchemist.nowcoder.entity.Comment;
-import com.alchemist.nowcoder.entity.DiscussPost;
-import com.alchemist.nowcoder.entity.Page;
-import com.alchemist.nowcoder.entity.User;
+import com.alchemist.nowcoder.entity.*;
+import com.alchemist.nowcoder.event.EventProducer;
 import com.alchemist.nowcoder.service.CommentService;
 import com.alchemist.nowcoder.service.DiscussPostService;
 import com.alchemist.nowcoder.service.LikeService;
@@ -41,6 +39,9 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     private LikeService likeService;
 
+    @Autowired
+    private EventProducer eventProducer;
+
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
     public String addDiscussPost(String title, String content) {
@@ -56,6 +57,15 @@ public class DiscussPostController implements CommunityConstant {
         post.setCreateTime(new Date());
         discussPostService.addDiscussPost(post);
 
+        // 触发发帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(post.getId());
+        eventProducer.fireEvent(event);
+
+        // 报错的情况统一处理
         return CommunityUtil.getJSONString(0, "发布成功！");
     }
 

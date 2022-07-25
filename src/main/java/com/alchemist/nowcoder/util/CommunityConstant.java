@@ -63,4 +63,9 @@ public interface CommunityConstant {
      * 系统Id
      */
     int SYSTEM_USER_ID = 1;
+
+    /**
+     * 主题: 发帖
+     */
+    String TOPIC_PUBLISH = "publish";
 }

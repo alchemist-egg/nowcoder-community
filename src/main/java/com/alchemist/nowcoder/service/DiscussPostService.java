@@ -19,7 +19,7 @@ public class DiscussPostService {
     private SensitiveFilter sensitiveFilter;
 
     public List<DiscussPost> findDiscussPost(int userId, int offset, int limit) {
-        return discussPostMapper.selectDiscussPost(userId, offset, limit);
+        return discussPostMapper.selectDiscussPosts(userId, offset, limit);
     }
 
     public int findDiscussPostRows(int userId) {
